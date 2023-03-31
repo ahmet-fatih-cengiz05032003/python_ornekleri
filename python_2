@@ -1,0 +1,140 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar 20 21:27:49 2023
+
+@author: fatih
+"""
+#Gerekli kütüphaneler import edilir
+import random
+
+#Fonksiyonlar tanımlanır
+def baslarken():
+    """
+    baslarken() fonksiyonu oyunun en başında ilk olarak çalışır ve oyun hakkında
+    gerekli bilgilendirmeleri yapar.
+    """
+    print("********************************************************************************************************************************************************")
+    print("Oyunun Kuralları...")
+    print("-Oyun sizden bilgisayarın ürettiği 4 farklı sayıyı tahmin etmenizi bekler.")
+    print("\n-Aldığınız çıktıda '*' karakteri bir tahmininizin ve yerinin doğru olduğununu; '+' karakteri ise bir tahmininizin doğru ancak yerinin yanlış olduğunu ifade eder\
+           \n-Oyunda 4 farklı sayı tahmininde bulunabilirsiniz. \
+           \n-Tahmin ettiğiniz 0'dan küçük 9'dan büyük olamaz.  \
+           \n-4 sayıyı da doğru tahmin ederseniz oyunu kazanırsınız pes ederseniz oyunu kaybedersiniz.\
+           \n-Oyundan çıkmak için -1 girin.")
+    print("********************************************************************************************************************************************************")
+    print()#Bir boşluk bırakmak için 
+def sayi_uret():  
+    """Bilgisayara rastgele sayılar ürettiren fonksiyon"""
+    uretilen_sayilar = [0,0,0,0]        #Rastgele sayıları tutmak için bir liste tanımlanır.
+    temp,i = 0 , 0                      #Rastgele üretilecek sayiları tutmak için bir değişken tanımlanır.
+    while i < 4:                        #4 sayı üretmek için 4 kez çalışacak bir while döngüsü açılır
+        temp = random.randint(0,9)
+        if temp in uretilen_sayilar:    #4 sayıdan herhangi ikisinin aynı olmaması için kontrol yapılır
+            uretilen_sayilar[i] = 0     #Listede olan bir sayı yeniden üretilmişse indis sıfırlanır
+            i -= 1                      #İkinci kez üretilen sayının yerine yeniden sayı üretilebilmesi için i bir azaltılır.
+        else:                           #Aynı sayı iki kez üretilmemişse gönül rahatlığıyla sayı listeye eklenebilir.
+            uretilen_sayilar[i] = temp
+        i += 1
+    return uretilen_sayilar             #Bilgisayarın ürettiği rastgele 4 farklı sayı geri döndürülür.
+
+def take():
+    """Kullanıcıdan tahminlerini alan fonksiyon"""
+    kullanici_sayilar = []                                   #Kullanıcı tahminlerini tutmak için bir liste tanımlanır
+    temp = 0                                                 #Kullanıcı tahminlerini tutmak için bir değişken tanımlanır
+    j=0                                                      #while döngüsü için bir değişken tanımlanır
+    while j < 4:                                             #Kullanıcıdan 4 sayı alınacağı için j 4'ten küçük olduğu müddetçe çalışacak bir döngüde kullanıcının tahminleri alınır.
+        temp = int(input(f"{j+1}. sayıyı girin: "))          #Kullanıcıdan i. tahmini alınır.
+        if temp in kullanici_sayilar:                        #Kullanıcının aynı değeri iki kez girmemesi için bir kontrol yapılır
+            print("Lütfen aynı sayıyı iki kez girmeyin")     #Aynı sayı iki kez girilmişse uyarı mesajı verilir
+            j-=1                                             #İkinci kez girilen değerin yeniden alınabilmesi için j, döngü değişkeni, bir azaltılır
+        if temp == -1:                                       #-1 girilmişse kullanıcı çıkmak istiyor demektir bu sebeple -1 geri döndürülür
+                                                             #Bu kontrol bir sonraki if kontrolünden önce olmalıdır. Aksi halde kullanıcı -1 girdiğinde oyundan çıkmak yerine yanlış değer uyarısı alır    
+            return -1
+        if temp < 0 or temp > 9:                             #Kullanıcının yanlış değer girmemesi için kontrol yapılır
+            print("Lütfen 0 ile 9 arasında bir sayı girin!") #Kullanıcı yanlış değer girdiyse uyarı mesajı verilir
+            j-=1                                             #Kullanıcının yanlış girdiği değerin yeniden alınabilmesi için j, döngü değişkeni, bir azaltılır
+        else:                                                #Kullanıcı yanlış değer girmemişse ve -1 girip oyundan çıkmayı talep etmemişse girdiği değer tahminidir ve listeye eklenir  
+            kullanici_sayilar += [temp]
+        j+=1                                                 #Döngünün devamı için döngü değişkeni güncellenir
+    return kullanici_sayilar                                 #Kullanıcının girdiği değerleri tutan liste geri döndürülür
+
+def hesapla(uretilen_sayilar, kullanici_sayilar):
+    """
+    Kullanıcının tahminlerine göre geri döndürülecek listeyi hesaplayan fonksiyon.
+    '*' -->> Listedeki herhangi bir eleman için tahmin doğrudur.
+    '+' -->> Listedeki herhangi bir eleman için tahmin doğrudur ancak yeri yanlıştır.
+    Parametreler:
+    uretilen_sayilar  -->> Bilgisayarın ürettiği sayıların olduğu liste.
+    kullanici_sayilar -->> Kullanıcının tahminlerinin olduğu liste.
+    """
+    show = []                                            #Kullanıcının tahminine göre doğruluk bilgilerini konumdan bağımsız olarak geri döndürmek için ilk başta boş olan bir liste tenımlanır.
+    for i in range(4):                                   #4 sayıyı da taramak için 4 kez çalışacak bir for döngüsü tanımlanır.
+        if kullanici_sayilar[i] == uretilen_sayilar[i]:  #i. indisteki tahmin i. ile indesteki sayının eşitliği kontrol edilir.
+            show += ['*']                                #Eşitse indisten bağımsız olarak listeye '*' eklenir.
+        else:                                            #Değerler eşit değilse...
+            if kullanici_sayilar[i] in uretilen_sayilar: #i. indiste kullanıcının girdiği değerin bilgisayarın ürettiği sayıların içinde olup olmadığı kontrol edilir.
+                show += ['+']                            #Değer listedeyse indisten bağımsız olarak listeye '+' eklenir.
+    return show                                          #Liste geri döndürülür.
+
+def sonuc(bol,sayi):
+    """
+    Oyunun sonlanması durumunda kullanıcıya oyun sonu bilgilendirmelerini yapan fonksiyon
+    Parametreler:
+    bol -->> Galibiyet/mağlubiyet bilgisini verir. bool
+        True  -->> Kullanıcı oyunu kazandı
+        False -->> Kullanıcı oyunu kaybetti
+    sayi -->> Oyuncunu tahmin sayısını verir. int
+    """
+    if bol == True: 
+        print("Tebrikler Kazandınız:) ")
+    else:
+        print("Maalesef Kaybettiniz:(")
+    print(f"Hamle sayınız: {sayi}\n")  
+    
+    
+#Ana kod bloğun başlangıcı..
+
+baslarken() #Oyunla ilgili gerekli bilgilendirmeler için baslarken() fonksiyonu çağrılır.
+while True: #İlk sonsuz döngünün başlangıcı.
+    """ 
+    Kullanıcı oyunu birden fazla kez oynamak isteyebilir.
+    Bu sebeple iç içe iki sonsuz döngü var.
+    İlk döngü tahmin oyunun basşlatıldığı döngü ve döngünün sonunda kullanıcıya yeniden oynamak isteyip istemediği sorulur.
+    Kullanıcıdan gelen cevaba göre oyun yeni değerlerle yeniden başlayabilir veya oyudan tamamen çıkabilir.
+    """
+    uretilen_sayilar = sayi_uret()                               #Bilgisayardan rastgele sayı üreten fonksiyon çağrılır ve değerleri geri döndürdüğü liste uretilen_sayilar listesine atanır.
+    print(uretilen_sayilar) 
+    sayac = 0                                                    #Tahmin sayısı için sayaç tanımlanır.
+    show = []                                                    #Kullanıcıya tahmin sonuçlarını göstermek için liste tanımlanır.
+    while True:                                                  #İkinci sonsuz döngünün başlangıcı.
+        kullanici_sayilar = take()                               #Kullanıcıdan 4 adet sayı tahmini alan fonksiyon çağrılır ve değerleri geri döndürdüğü liste kullanici_sayilar listesine atanır.
+        if kullanici_sayilar == uretilen_sayilar and sayac == 0: #Kullanıcı 4 sayıyı da ilk tahminde doğru bildi mi kontrol edilir. 
+            print("Tebrikler bir defada doğru bildiniz...")      #Tekte bildiyse kullanıcı tebrik edilir...
+            break                                                #ve oyun sonlanır,döngüden çıkılır.
+        if kullanici_sayilar == -1:                              #Kullanıcı -1 girmişse çıkmak istiyor demektir.
+                                                                 #Kullanıcının girdiği sayıları alan take() fonksiyonu kullanıcı -1 girdiğinde bir dizi değil doğrudan -1 değerini geri döndürür.
+            sonuc(False, sayac)                                  #Kullanıcı oyundan çıkmak istiyorsa pes etmiş demektir(Yani oyunu kaybetmiştir). Bu sebeple sonuc() fonksiyonu false parametre ile çağrılır.
+            break                                                #Öyleyse döngüden çıkılır.
+        sayac+=1                                                 #Her tahmin için sayaç bir arttırılır.
+        show = hesapla(uretilen_sayilar, kullanici_sayilar)      #Girilen değerler hesapla() fonksiyonunda bilgisayarın ürettiği değerler ile kıyaslanır ve geri döndürülen liste show listeisnde tutulur.
+        print(show)                                              #Tahmin sonuçları ekrana bastırılır.
+        flag = True                                              #Kullanıcının oyunu kazanıp kazanmadığı bilgisini tutmak için bool flag değişkeni tanımlanır.
+        for i in show:                                           #Kontrol için show listesinin üzerinden geçen bir for döngüsü açılır.
+            if i == '*':                                         #Listenin tüm elemanları yıldızsa kullanıcı oyunu kazanmış demektir.
+                flag = True                                      #Öyleyse flag True'dur
+            else:                                                #Değilse kullanıcı oyunu henüz kazanamamış demektir.
+                flag = False                                     #Öyleyse flag False'tur.
+                break                                            #En az bir eleman '+' ise diğer elemanları kontrol etmenin bir anlamı yoktur. Bu yüzden for döngüsünden çıkılır.
+        if flag == True and len(show) == 4:                      #flag true ise kullanıcı oyunu kazanmış demektir.
+            sonuc(True, sayac)                                   #Öyleyse sonuc() fonksiyonu true parametre ile çağrılır.
+            break                                                #ve oyun sonlanmış demektir. İkinci while döngüsünden çıkılabilir.   
+    tekrar = input("Yeniden oynamak ister misiniz[c/q]: ")       #Kullanıcıdan yeniden oynamak isteyip istemediği bilgisi alınır.
+    if tekrar == 'q':                                            #no girilmişse kullanıcı yeniden oynamak istemiyor demektir.
+        break                                                    #Öyleyse İlk döngüden çıkılır.
+    """
+    Son yapılan kontrolde eğer oyuncu yes girmişse döngü sonsuz kez çalışacak 
+    şekilde tanımlandığı için yeni oyun otomatik olarak başlar.
+    """
+terminal_bekle = input("...")                                    #Oyun tamamen sonlandığında terminalin kapanmadan son oyunun sonuçlarını da göstermesi için boş bir input. 
+#ve son...
+#Ahmet Fatih Cengiz
